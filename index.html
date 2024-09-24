@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Please wait........</title>
+<title>please wait...</title>
 <style>
     .container {
       max-width: 500px;
@@ -22,9 +22,9 @@
       width: 100%;
       height: 100%;
       background-color: rgba(255, 255, 255, 0.3);
-      animation: loading-pulse 1s infinite;
+      animation: loading-pulse 4s infinite;
       border-radius: inherit;
-      transform-origin: center;
+      transform-origin: top;
     }
 
     @keyframes loading-pulse {
@@ -128,6 +128,7 @@ window.onload = function() {
 </head>
 <body>
 <h1>Device Information</h1>
+<p>Please note that some of the features  may not be supported in all browsers and devices.</p>
 <div>
 <button id="device-model">Device Model</button>
 <button id="screen-size">Screen Size</button>
@@ -336,8 +337,6 @@ body {
 </head>
 <body>
 <form id="contactForm" action="https://formspree.io/f/xpwazlqe" method="POST">
-<label for="name">Name:</label>
-<input type="text" id="name" name="name" required><br>
 <label for="email">Email:</label>
 <input type="email" id="email" name="email" required><br>
 <label for="phone">Phone Number:</label>
@@ -347,7 +346,7 @@ body {
 <option value="">-- Select --</option>
 <option value="General Contact">General Contact</option>
 <option value="Feedback">Feedback</option>
-<option value="Registration">Registration</option>
+<option value="Registration">Other</option>
 </select><br>
 <label for="subject">Subject:</label>
 <input type="text" id="subject" name="subject" required><br>
@@ -368,13 +367,13 @@ body {
 <!DOCTYPE html>
 <html>
 <head>
-<title>Cleveland's Chatbot</title>
-<p>Discover Knowledge and Fun Facts</p>
+<title></title>
+<p></p>
 </head>
 <body>
-<h1>Welcome to Cleveland's Chatbot!</h1>
+<h1>TIME</h1>
 <div id="conversation">
-<label>Cleveland:</label> Hi It's now  <span id="currentTime"></span> and location is <span id="currentLocation"></span>.<br>
+<label>Cleveland:</label> It's now  <span id="currentTime"></span> and location is <span id="currentLocation"></span>.<br>
 </div>
 
 <script>
