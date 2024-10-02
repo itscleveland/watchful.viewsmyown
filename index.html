@@ -1,414 +1,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>please wait...</title>
-<style>
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
 
-    .skeleton-screen {
-      background-color: #eee;
-    }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
 
-    .skeleton-screen::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(255, 255, 255, 0.3);
-      animation: loading-pulse 4s infinite;
-      border-radius: inherit;
-      transform-origin: top;
-    }
+        #buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-    @keyframes loading-pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-  </style>
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex: 1 1 calc(33% - 10px);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #output {
+            background-color: #ffffff;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #quiz {
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #leaderboard, #progress {
+            margin: 20px auto;
+            max-width: 600px;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        progress {
+            width: 100%;
+        }
+
+        #conversation {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid white;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 600px) {
+            button {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container skeleton-screen">
-<h1 class="skeleton-screen">Generating...</h1>
-<p class="skeleton-screen">its.c.l.3.v.3.l.a.n.dKE</p>
-<button class="btn btn-primary skeleton-screen">Loading...</button>
-<p>Please wait this might take a while.</p>
-</div>
-<script>
-    window.onload = function() {
-      var skeletonScreens = document.getElementsByClassName('skeleton-screen');
-      for (var i = 0; i < skeletonScreens.length; i++) {
-        skeletonScreens[i].classList.remove('skeleton-screen');
-      }
+    <div id="toast"></div>
 
+    <h1>Mobile Device Information</h1>
+    <div id="device-info">
+        <div id="buttons">
+            <button id="device-model">Device Model</button>
+            <button id="screen-size">Screen Size</button>
+            <button id="browser-info">Browser Info</button>
+            <button id="battery-status">Battery Status</button>
+            <button id="os-info">OS Information</button>
+            <button id="device-orientation">Device Orientation</button>
+            <button id="device-motion">Device Motion</button>
+            <button id="geolocation">Geolocation</button>
+            <button id="proximity-sensor">Proximity Sensor</button>
+            <button id="network-info">Network Information</button>
+            <button id="device-memory">Device Memory</button>
+            <button id="media-capabilities">Media Capabilities</button>
+        </div>
+        <div id="output"></div>
+    </div>
 
-window.onload = function() {
-    // Update the time and day when the page loads
-    updateTime();
-    updateDay();
-  }
+    <h1>Quiz</h1>
+    <ul>
+        <li><button onclick="startQuiz('science')">Science</button></li>
+        <li><button onclick="startQuiz('entertainment')">Entertainment</button></li>
+        <li><button onclick="startQuiz('family')">Family</button></li>
+        <li><button onclick="startQuiz('creativity')">Creativity</button></li>
+        <li><button onclick="startQuiz('fashion')">Fashion</button></li>
+        <li><button onclick="startQuiz('art')">Art</button></li>
+    </ul>
+    <div id="quiz"></div>
+    <div id="leaderboard"></div>
+    <div id="progress"></div>
 
-  // Function to update the time element
-  function updateTime() {
-    const currentTime = new Date();
-    const hours = currentTime.getHours();
-    const minutes = currentTime.getMinutes();
-    const seconds = currentTime.getSeconds();
-    const formattedTime = formatTime(hours, minutes, seconds);
+    <h1>Welcome to Cleveland's Chatbot!</h1>
+    <section id="conversation">
+        <label>Cleveland:</label> Hi! It's now <span id="currentTime"></span> and the location is <span id="currentLocation"></span>.<br>
+    </section>
+    <button onclick="getRandomFact()">Random Fact</button>
 
-    document.getElementById("time").innerHTML = formattedTime;
-  }
+    <script>
+        // Mobile Device Information Script
+        const outputContainer = document.getElementById("output");
+        const toast = document.getElementById("toast");
 
-  // Function to update the day element
-  function updateDay() {
-    const currentTime = new Date();
-    const day = currentTime.toLocaleDateString('default', { weekday: 'long' });
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll("#device-info button").forEach(function(button) {
+                button.addEventListener("click", function() {
+                    const buttonId = button.getAttribute("id");
+                    outputContainer.innerHTML = ""; // Clear previous output
 
-    document.getElementById("day").innerHTML = day;
-  }
-
-  // Function to format the time as HH:MM:SS
-  function formatTime(hours, minutes, seconds) {
-    const formattedHours = hours < 10 ? "0" + hours : hours;
-    const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
-    const formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
-
-    return formattedHours + ":" + formattedMinutes + ":" + formattedSeconds;
-  }
-
-  // Update the time every second
-  setInterval(updateTime, 1000);
-</script>
-
-
-    };
-  </script>
-</body>
-</html>
-
-
-
-
- <title>PREMIMIUM CHAT</title>
- </head>
- <style>
-    button {
-      background-color: #808080;
-      border: none;
-      color: white;
-    }
-  </style>
-<body>
-  <button type="button"><a href="https://ogari655.github.io//" style="text-decoration: none; color: white;">Premium Chat</a></button>
-  <button type="button"><a href="https://api.whatsapp.com/message/QI5N3LOQDI6ZD1?autoload=1&app_absent=0/" style="text-decoration: none; color: white;">WhatsApp</a></button>
-</body>
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobile Device Information</title>
-</head>
-<body>
-<h1>Device Information</h1>
-<p>Please note that some of the features  may not be supported in all browsers and devices.</p>
-<div>
-<button id="device-model">Device Model</button>
-<button id="screen-size">Screen Size</button>
-<button id="browser-info">Browser Info</button>
-<button id="battery-status">Battery Status</button>
-<button id="os-info">OS Information</button>
-<button id="media-capabilities">Media Capabilities</button>
-</div>
-<div id="output"></div>
-<script>
-    const outputContainer = document.getElementById("output");
-
-    document.addEventListener("DOMContentLoaded", function() {
-      // Attach click event listeners to each button
-      document.querySelectorAll("button").forEach(function(button) {
-        button.addEventListener("click", function() {
-          const buttonId = button.getAttribute("id");
-
-          // Clear previous output
-          outputContainer.innerHTML = "";
-
-          switch (buttonId) {
-            case "device-model":
-              outputContainer.innerHTML = `Device Model: ${navigator.userAgent.match(/\b(iPhone|iPad|iPod|Android)\b/) || 'Unknown Device Model'}`;
-              break;
-            case "screen-size":
-              outputContainer.innerHTML = `Screen Size: ${screen.width} x ${screen.height}`;
-              break;
-            case "browser-info":
-              outputContainer.innerHTML = `Browser Info: ${navigator.userAgent}`;
-              break;
-            case "battery-status":
-              if ('getBattery' in navigator) {
-                navigator.getBattery().then(function(battery) {
-                  const batteryLevel = battery.level;
-                  const charging = battery.charging;
-
-                  outputContainer.innerHTML = `Battery Status: ${(batteryLevel * 100).toFixed(0)}%, ${charging ? 'Charging' : 'Not Charging'}`;
+                    switch (buttonId) {
+                        case "device-model":
+                            const deviceModel = navigator.userAgent.match(/\b(iPhone|iPad|iPod|Android|Windows Phone|BlackBerry|Opera Mini|IEMobile)\b/);
+                            typeText(`Device Model: ${deviceModel ? deviceModel[0] : 'Unknown Device Model'}`);
+                            break;
+                        case "screen-size":
+                            typeText(`Screen Size: ${screen.width} x ${screen.height} pixels`);
+                            break;
+                        case "browser-info":
+                            typeText(`Browser Info: ${navigator.userAgent}`);
+                            break;
+                        case "battery-status":
+                            if ('getBattery' in navigator) {
+                                navigator.getBattery().then(function(battery) {
+                                    const batteryLevel = (battery.level * 100).toFixed(0);
+                                    const charging = battery.charging ? 'Charging' : 'Not Charging';
+                                    typeText(`Battery Status: ${batteryLevel}%, ${charging}`);
+                                }).catch(() => {
+                                    typeText('Unable to retrieve battery status.');
+                                });
+                            } else {
+                                typeText('Battery status information is unavailable in this browser.');
+                            }
+                            break;
+                        case "os-info":
+                            if (navigator.userAgentData) {
+                                navigator.userAgentData.getHighEntropyValues(["platform"]).then(ua => {
+                                    typeText(`OS Information: ${ua.platform}`);
+                                }).catch(() => {
+                                    typeText(`OS Information: ${navigator.platform}`);
+                                });
+                            } else {
+                                typeText(`OS Information: ${navigator.platform}`);
+                            }
+                            break;
+                        case "device-orientation":
+                            typeText(window.DeviceOrientationEvent ? 
+                                'DeviceOrientationEvent is supported in this browser.' : 
+                                'DeviceOrientationEvent is not supported in this browser.');
+                            break;
+                        case "device-motion":
+                            typeText(window.DeviceMotionEvent ? 
+                                'DeviceMotionEvent is supported in this browser.' : 
+                                'DeviceMotionEvent is not supported in this browser.');
+                            break;
+                        case "geolocation":
+                            if (navigator.geolocation) {
+                                typeText('Geolocation is supported in this browser.');
+                            } else {
+                                typeText('Geolocation is not supported in this browser.');
+                            }
+                            break;
+                        case "proximity-sensor":
+                            typeText(window.DeviceProximityEvent ? 
+                                'DeviceProximityEvent is supported in this browser.' : 
+                                'DeviceProximityEvent is not supported in this browser.');
+                            break;
+                        case "network-info":
+                            if (navigator.connection) {
+                                const connectionType = navigator.connection.effectiveType || 'Unknown';
+                                typeText(`Network Type: ${connectionType}`);
+                            } else {
+                                typeText('Network information is not available in this browser.');
+                            }
+                            break;
+                        case "device-memory":
+                            if (navigator.deviceMemory) {
+                                typeText(`Device Memory: ${navigator.deviceMemory} GB`);
+                            } else {
+                                typeText('Device memory information is not available in this browser.');
+                            }
+                            break;
+                        case "media-capabilities":
+                            const mediaCapabilities = navigator.mediaCapabilities || { supports: { audio: 'unknown', video: 'unknown' } };
+                            typeText(`Media Capabilities: 
+                                <br> Audio: ${mediaCapabilities.supports.audio} 
+                                <br> Video: ${mediaCapabilities.supports.video}`);
+                            break;
+                    }
                 });
-             
-} else {
-                outputContainer.innerHTML = 'Battery status information is unavailable in this browser.';
-              }
-              break;
-            case "os-info":
-              outputContainer.innerHTML = `OS Information: ${navigator.userAgentData.platform}`;
-              break;
-            case "device-orientation":
-              if (window.DeviceOrientationEvent) {
-                outputContainer.innerHTML = 'DeviceOrientationEvent is supported in this browser.';
-              } else {
-                outputContainer.innerHTML = 'DeviceOrientationEvent is not supported in this browser.';
-              }
-              break;
-            case "device-motion":
-              if (window.DeviceMotionEvent) {
-                outputContainer.innerHTML = 'DeviceMotionEvent is supported in this browser.';
-              } else {
-                outputContainer.innerHTML = 'DeviceMotionEvent is not supported in this browser.';
-              }
-              break;
-            case "geolocation":
-              if (navigator.geolocation) {
-                outputContainer.innerHTML = 'Geolocation is supported in this browser.';
-              } else {
-                outputContainer.innerHTML = 'Geolocation is not supported in this browser.';
-              }
-              break;
-            case "proximity-sensor":
-              if (window.DeviceProximityEvent) {
-                outputContainer.innerHTML = 'DeviceProximityEvent is supported in this browser.';
-              } else {
-                outputContainer.innerHTML = 'DeviceProximityEvent is not supported in this browser.';
-              }
-              break;
-            case "network-info":
-              if (navigator.connection) {
-                navigator.connection.getNetworkInfo().then(function(networkInfo) {
-                  const networkType = networkInfo.type;
-                  const signalStrength = networkInfo.signalStrength;
-
-                  outputContainer.innerHTML = `Network Information: ${networkType}, ${signalStrength}`;
-                });
-            
-} else {
-                outputContainer.innerHTML = 'Network information is unavailable in this browser.';
-              }
-              break;
-            case "device-memory":
-              if (navigator.deviceMemory) {
-                navigator.deviceMemory.getDeviceMemoryInfo().then(function(memoryInfo) {
-                  const totalMemoryGB = memoryInfo.total.toFixed(1);
-                  const usedMemoryGB = memoryInfo.used.toFixed(1);
-
-                  outputContainer.innerHTML = `Device Memory: ${totalMemoryGB} GB (used: ${usedMemoryGB} GB)`;
-                });
-              } else {
-                outputContainer.innerHTML = 'Device memory information is unavailable in this browser.';
-              }
-              break;
-            case "media-capabilities":
-              if (navigator.mediaCapabilities) {
-                outputContainer.innerHTML = 'Media Capabilities API is supported in this browser.';
-              } else {
-                outputContainer.innerHTML = 'Media Capabilities API is not supported in this browser.';
-              }
-              break;
-            default:
-              outputContainer.innerHTML = "Information unavailable.";
-          }
+            });
         });
-      });
-    });
-  </script>
+
+        function showToast(message) {
+            toast.innerText = message;
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+
+        // Typing Effect Function
+        function typeText(text, delay = 50) {
+            outputContainer.innerHTML = ""; // Clear previous output
+            let index = 0;
+
+            const typingInterval = setInterval(() => {
+                if (index < text.length) {
+                    outputContainer.innerHTML += text[index];
+                    index++;
+                } else {
+                    clearInterval(typingInterval);
+                }
+            }, delay);
+        }
+
+        // Quiz Questions
+        const quizzes = {
+            science: [
+                {
+                    question: "What is the chemical symbol for water?",
+                    options: ["H2O", "CO2", "O2", "NaCl"],
+                    answer: "H2O"
+                },
+                {
+                    question: "What planet is known as the Red Planet?",
+                    options: ["Earth", "Mars", "Jupiter", "Venus"],
+                    answer: "Mars"
+                },
+                {
+                    question: "What gas do plants absorb from the atmosphere?",
+                    options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+                    answer: "Carbon Dioxide"
+                }
+            ],
+            entertainment: [
+                {
+                    question: "Which movie won the Academy Award for Best Picture in 2020?",
+                    options: ["1917", "Parasite", "Joker", "Once Upon a Time in Hollywood"],
+                    answer: "Parasite"
+                },
+                {
+                    question: "Who played Jack Dawson in Titanic?",
+                    options: ["Leonardo DiCaprio", "Brad Pitt", "Johnny Depp", "Tom Cruise"],
+                    answer: "Leonardo DiCaprio"
+                }
+            ],
+            family: [
+                {
+                    question: "What is the last name of the family in 'The Simpsons'?",
+                    options: ["Simpson", "Griffin", "Brown", "Parker"],
+                    answer: "Simpson"
+                }
+            ],
+            creativity: [
+                {
+                    question: "What color do you get by mixing red and white?",
+                    options: ["Pink", "Orange", "Purple", "Brown"],
+                    answer: "Pink"
+                }
+            ],
+            fashion: [
+                {
+                    question: "What is the name of the popular clothing brand with a crocodile logo?",
+                    options: ["Lacoste", "Nike", "Adidas", "Puma"],
+                    answer: "Lacoste"
+                }
+            ],
+            art: [
+                {
+                    question: "Who painted the Mona Lisa?",
+                    options: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Claude Monet"],
+                    answer: "Leonardo da Vinci"
+                }
+            ],
+            // Add more categories and questions as needed
+        };
+
+        // Start Quiz Function
+        let currentQuestionIndex = 0;
+        let selectedQuiz = [];
+
+        function startQuiz(category) {
+            selectedQuiz = quizzes[category] || [];
+            currentQuestionIndex = 0;
+
+            if (selectedQuiz.length > 0) {
+                typeText(`Starting ${category} quiz...`, 100);
+                setTimeout(() => {
+                    displayQuestion();
+                }, 2000); // Shortened delay before showing the first question
+            } else {
+                typeText("No quiz questions available for this category.");
+            }
+        }
+
+        function displayQuestion() {
+            const questionData = selectedQuiz[currentQuestionIndex];
+            if (!questionData) {
+                typeText("Quiz completed! Thank you for participating.");
+                return;
+            }
+
+            const questionText = questionData.question;
+            const options = questionData.options.join("<br>");
+            typeText(`Question ${currentQuestionIndex + 1}: ${questionText}<br>Options:<br>${options}`);
+
+            // Create a simple way to answer the question
+            setTimeout(() => {
+                const answer = prompt(`Type your answer (e.g., 1 for "${questionData.options[0]}", 2 for "${questionData.options[1]}", etc.):`);
+                if (answer) {
+                    const userAnswer = questionData.options[answer - 1];
+                    if (userAnswer === questionData.answer) {
+                        typeText("Correct! 🎉", 100);
+                    } else {
+                        typeText(`Wrong! The correct answer was: ${questionData.answer}`, 100);
+                    }
+                    currentQuestionIndex++;
+                    setTimeout(() => {
+                        displayQuestion();
+                    }, 5000); // Wait before showing the next question
+                }
+            }, 8200); // Shortened delay before prompting for the answer
+        }
+
+        // Random Fact Function
+        function getRandomFact() {
+            const facts = [
+                "Did you know that honey never spoils?",
+                "Bananas are berries, but strawberries are not!",
+                "Octopuses have three hearts.",
+                "A group of flamingos is called a 'flamboyance'."
+            ];
+            typeText(facts[Math.floor(Math.random() * facts.length)]);
+        }
+
+        // Geolocation Function
+        function getGeolocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        const locationString = `Latitude: ${latitude}, Longitude: ${longitude}`;
+                        document.getElementById("currentLocation").innerText = locationString;
+                        showToast('Location retrieved successfully!');
+                    },
+                    error => {
+                        if (error.code === error.PERMISSION_DENIED) {
+                            showToast('Geolocation permission denied. Please enable it in your settings.');
+                        } else {
+                            showToast('Unable to retrieve location. Please check your settings.');
+                        }
+                    }
+                );
+            } else {
+                showToast('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Display current time and geolocation on load
+        document.getElementById("currentTime").innerText = new Date().toLocaleTimeString();
+        getGeolocation(); // Call geolocation function to fetch the location
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>cleveland AI</title>
-<style>
-#chat {
-      background: linear-gradient(to right, blue 50%, grey 50%);
-      border-radius: 10px;
-      padding: 15px;
-    }
-  </style>
-</head>
-<body>
-<h2>404FOUND</h2>
-<div id="chat">
- <div id="conversation">
-      <p>Clevel-AI.</p>
-      <p>*Experimental Feature!</p>
- </div>
-<label for="message">You:</label>
-<input type="text" id="message" placeholder="Type your message...">
-<button onclick="sendMessage()">Send</button>
-<div id="conversation"></div>
-</body>
-</html>
-</div>
-<script src="chatbot.js"></script>
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact Form</title>
-<style>
-body {
-      font-family: Arial, sans-serif;
-      background-image: linear-gradient(to right, #0072ff 50%, #ffffff 50%);
-    }
-
-    form {
-      background-color: #ffffff;
-      max-width: 400px;
-      margin: 40px auto;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 20px;
-      border: 1px solid #cccccc;
-      border-radius: 3px;
-    }
-
-    input[type="submit"],
-    input[type="button"] {
-      background-color: #4caf50;
-      border: none;
-      color: #ffffff;
-      padding: 10px 20px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-
-    .error {
-      color: red;
-    }
-  </style>
-</head>
-<body>
-<form id="contactForm" action="https://formspree.io/f/xpwazlqe" method="POST">
-<label for="email">Email:</label>
-<input type="email" id="email" name="email" required><br>
-<label for="phone">Phone Number:</label>
-<input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required><br>
-<label for="inquiryType">Inquiry Type:</label>
-<select id="inquiryType" name="inquiryType">
-<option value="">-- Select --</option>
-<option value="General Contact">General Contact</option>
-<option value="Feedback">Feedback</option>
-<option value="Registration">Other</option>
-</select><br>
-<label for="subject">Subject:</label>
-<input type="text" id="subject" name="subject" required><br>
-<label for="message">Message:</label>
-<textarea id="message" name="message" rows="5" cols="30" required></textarea><br>
-<input type="checkbox" id="subscription" name="subscription">
-<label for="subscription">Subscribe me to your newsletter</label><br>
-<input type="submit" value="Send Message" name="_submit">
-</form>
-<script>
-// ...
-  </script>
-</body>
-
-
-
-...............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-<!DOCTYPE html>
-<html>
-<head>
-<title></title>
-<p></p>
-</head>
-<body>
-<h1>TIME</h1>
-<div id="conversation">
-<label>Cleveland:</label> It's now  <span id="currentTime"></span> and location is <span id="currentLocation"></span>.<br>
-</div>
-
-<script>
-    const currentTimeSpan = document.getElementById('currentTime');
-    const currentLocationSpan = document.getElementById('currentLocation');
-
-    function updateCurrentTime() {
-      const now = new Date();
-      const time = now.toLocaleTimeString();
-      currentTimeSpan.innerText = time;
-    }
-
-    function updateCurrentLocation() {
-      // You can use the Geolocation API or other methods to get the user's location
-      // In this example, we're setting a static location for demonstration purposes
-      currentLocationSpan.innerText = 'Kenya EA,Africa';
-    }
-
-    function init() { 
-      updateCurrentTime();
-      updateCurrentLocation();
-    }
-
-    init();
-  </script>
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
