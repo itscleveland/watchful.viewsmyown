@@ -17,6 +17,21 @@
             color: #333;
         }
 
+        #desktop-view-button {
+            background-color: #28a745; /* Green color for the button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px; /* Space below the button */
+            display: block; /* Make the button a block element */
+            text-align: center; /* Center the button text */
+            width: 200px; /* Fixed width for the button */
+            margin-left: auto; /* Center the button horizontally */
+            margin-right: auto; /* Center the button horizontally */
+        }
+
         #buttons {
             display: flex;
             flex-wrap: wrap;
@@ -101,6 +116,7 @@
     </style>
 </head>
 <body>
+    <button id="desktop-view-button" onclick="switchToDesktopView()">Switch to Desktop View</button>
     <div id="toast"></div>
 
     <h1>Mobile Device Information</h1>
@@ -123,15 +139,17 @@
     </div>
 
     <h1>Quiz</h1>
-    <ul>
-        <li><button onclick="startQuiz('science')">Science</button></li>
-        <li><button onclick="startQuiz('entertainment')">Entertainment</button></li>
-        <li><button onclick="startQuiz('family')">Family</button></li>
-        <li><button onclick="startQuiz('creativity')">Creativity</button></li>
-        <li><button onclick="startQuiz('fashion')">Fashion</button></li>
-        <li><button onclick="startQuiz('art')">Art</button></li>
-    </ul>
-    <div id="quiz"></div>
+    <div id="quiz">
+        <ul>
+            <li><button onclick="startQuiz('science')">Science</button></li>
+            <li><button onclick="startQuiz('entertainment')">Entertainment</button></li>
+            <li><button onclick="startQuiz('family')">Family</button></li>
+            <li><button onclick="startQuiz('creativity')">Creativity</button></li>
+            <li><button onclick="startQuiz('fashion')">Fashion</button></li>
+            <li><button onclick="startQuiz('art')">Art</button></li>
+            <li><button onclick="startQuiz('general')">General Knowledge</button></li>
+        </ul>
+    </div>
     <div id="leaderboard"></div>
     <div id="progress"></div>
 
@@ -142,6 +160,15 @@
     <button onclick="getRandomFact()">Random Fact</button>
 
     <script>
+        // Function to switch to desktop view
+        function switchToDesktopView() {
+            const viewportMetaTag = document.querySelector('meta[name="viewport"]');
+            if (viewportMetaTag) {
+                viewportMetaTag.setAttribute('content', 'width=1024'); // Change width to a fixed value
+            }
+            location.reload(); // Reload to apply the changes
+        }
+
         // Mobile Device Information Script
         const outputContainer = document.getElementById("output");
         const toast = document.getElementById("toast");
@@ -211,199 +238,158 @@
                             break;
                         case "network-info":
                             if (navigator.connection) {
-                                const connectionType = navigator.connection.effectiveType || 'Unknown';
-                                typeText(`Network Type: ${connectionType}`);
+                                const { effectiveType, downlink, rtt } = navigator.connection;
+                                typeText(`Network Type: ${effectiveType}, Downlink: ${downlink} Mbps, RTT: ${rtt} ms`);
                             } else {
                                 typeText('Network information is not available in this browser.');
                             }
                             break;
                         case "device-memory":
-                            if (navigator.deviceMemory) {
-                                typeText(`Device Memory: ${navigator.deviceMemory} GB`);
-                            } else {
-                                typeText('Device memory information is not available in this browser.');
-                            }
+                            const memory = navigator.deviceMemory || 'Unknown';
+                            typeText(`Device Memory: ${memory} GB`);
                             break;
                         case "media-capabilities":
-                            const mediaCapabilities = navigator.mediaCapabilities || { supports: { audio: 'unknown', video: 'unknown' } };
-                            typeText(`Media Capabilities: 
-                                <br> Audio: ${mediaCapabilities.supports.audio} 
-                                <br> Video: ${mediaCapabilities.supports.video}`);
+                            if ('mediaCapabilities' in navigator) {
+                                typeText('Media capabilities can be checked using the Media Capabilities API.');
+                            } else {
+                                typeText('Media Capabilities API is not supported in this browser.');
+                            }
                             break;
                     }
                 });
             });
+
+            // Initialize time and location updates
+            setInterval(updateCurrentTime, 1000);
+            updateCurrentLocation();
         });
 
-        function showToast(message) {
-            toast.innerText = message;
-            toast.style.display = "block";
-            setTimeout(() => {
-                toast.style.display = "none";
-            }, 3000);
-        }
-
-        // Typing Effect Function
-        function typeText(text, delay = 50) {
+        function typeText(text) {
             outputContainer.innerHTML = ""; // Clear previous output
+            const textArray = text.split("");
             let index = 0;
 
             const typingInterval = setInterval(() => {
-                if (index < text.length) {
-                    outputContainer.innerHTML += text[index];
+                if (index < textArray.length) {
+                    outputContainer.innerHTML += textArray[index];
                     index++;
                 } else {
                     clearInterval(typingInterval);
                 }
-            }, delay);
+            }, 50);
         }
 
-        // Quiz Questions
-        const quizzes = {
-            science: [
-                {
-                    question: "What is the chemical symbol for water?",
-                    options: ["H2O", "CO2", "O2", "NaCl"],
-                    answer: "H2O"
-                },
-                {
-                    question: "What planet is known as the Red Planet?",
-                    options: ["Earth", "Mars", "Jupiter", "Venus"],
-                    answer: "Mars"
-                },
-                {
-                    question: "What gas do plants absorb from the atmosphere?",
-                    options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
-                    answer: "Carbon Dioxide"
-                }
+        // Quiz functionality
+        const quizQuestions = {
+            'science': [
+                { question: 'What is your favorite element in the periodic table?', answer: 'hydrogen' },
+                { question: 'What is the speed of light?', answer: '299792458' },
+                { question: 'What is the chemical formula for water?', answer: 'h2o' }
             ],
-            entertainment: [
-                {
-                    question: "Which movie won the Academy Award for Best Picture in 2020?",
-                    options: ["1917", "Parasite", "Joker", "Once Upon a Time in Hollywood"],
-                    answer: "Parasite"
-                },
-                {
-                    question: "Who played Jack Dawson in Titanic?",
-                    options: ["Leonardo DiCaprio", "Brad Pitt", "Johnny Depp", "Tom Cruise"],
-                    answer: "Leonardo DiCaprio"
-                }
+            'entertainment': [
+                { question: 'What is your favorite movie genre?', answer: 'action' },
+                { question: 'Who directed the movie "Inception"?', answer: 'nolan' },
+                { question: 'What is the longest-running TV show?', answer: 'the simpsons' }
             ],
-            family: [
-                {
-                    question: "What is the last name of the family in 'The Simpsons'?",
-                    options: ["Simpson", "Griffin", "Brown", "Parker"],
-                    answer: "Simpson"
-                }
+            'family': [
+                { question: 'What is your favorite family vacation spot?', answer: 'beach' },
+                { question: 'What family tradition do you cherish the most?', answer: 'dinner' },
+                { question: 'Who is the oldest family member?', answer: 'grandparent' }
             ],
-            creativity: [
-                {
-                    question: "What color do you get by mixing red and white?",
-                    options: ["Pink", "Orange", "Purple", "Brown"],
-                    answer: "Pink"
-                }
+            'creativity': [
+                { question: 'What is your favorite medium to create art?', answer: 'paint' },
+                { question: 'What inspires your creative projects?', answer: 'nature' },
+                { question: 'What is your favorite type of music to listen to while creating?', answer: 'jazz' }
             ],
-            fashion: [
-                {
-                    question: "What is the name of the popular clothing brand with a crocodile logo?",
-                    options: ["Lacoste", "Nike", "Adidas", "Puma"],
-                    answer: "Lacoste"
-                }
+            'fashion': [
+                { question: 'What is your favorite fashion accessory?', answer: 'watch' },
+                { question: 'What color do you wear the most?', answer: 'black' },
+                { question: 'Who is your favorite fashion designer?', answer: 'chanel' }
             ],
-            art: [
-                {
-                    question: "Who painted the Mona Lisa?",
-                    options: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Claude Monet"],
-                    answer: "Leonardo da Vinci"
-                }
+            'art': [
+                { question: 'What is your favorite art medium?', answer: 'medium' },
+                { question: 'Who is your favorite artist?', answer: 'artist' },
+                { question: 'What piece of art inspires you the most?', answer: 'art' }
             ],
-            // Add more categories and questions as needed
+            'general': [
+                { question: 'What is the capital of France?', answer: 'paris' },
+                { question: 'Who wrote "Romeo and Juliet"?', answer: 'shakespeare' },
+                { question: 'What is the largest planet in our solar system?', answer: 'jupiter' }
+            ]
         };
 
-        // Start Quiz Function
         let currentQuestionIndex = 0;
-        let selectedQuiz = [];
+        let currentCategory = '';
 
         function startQuiz(category) {
-            selectedQuiz = quizzes[category] || [];
-            currentQuestionIndex = 0;
+            currentQuestionIndex = 0; // Reset question index for a new category
+            currentCategory = category; // Store current category
+            typeText(`Starting quiz for ${category}.`); // Display typing effect for starting quiz
 
-            if (selectedQuiz.length > 0) {
-                typeText(`Starting ${category} quiz...`, 100);
-                setTimeout(() => {
-                    displayQuestion();
-                }, 2000); // Shortened delay before showing the first question
-            } else {
-                typeText("No quiz questions available for this category.");
-            }
-        }
-
-        function displayQuestion() {
-            const questionData = selectedQuiz[currentQuestionIndex];
-            if (!questionData) {
-                typeText("Quiz completed! Thank you for participating.");
-                return;
-            }
-
-            const questionText = questionData.question;
-            const options = questionData.options.join("<br>");
-            typeText(`Question ${currentQuestionIndex + 1}: ${questionText}<br>Options:<br>${options}`);
-
-            // Create a simple way to answer the question
             setTimeout(() => {
-                const answer = prompt(`Type your answer (e.g., 1 for "${questionData.options[0]}", 2 for "${questionData.options[1]}", etc.):`);
-                if (answer) {
-                    const userAnswer = questionData.options[answer - 1];
-                    if (userAnswer === questionData.answer) {
-                        typeText("Correct! 🎉", 100);
+                askQuestion();
+            }, 2000); // Wait for 2 seconds after the quiz starts
+        }
+
+        function askQuestion() {
+            if (currentQuestionIndex < quizQuestions[currentCategory].length) {
+                const { question } = quizQuestions[currentCategory][currentQuestionIndex];
+                typeText(`Question ${currentQuestionIndex + 1}: ${question} Please type your answer below:`);
+
+                // Wait 4 seconds before showing the prompt
+                setTimeout(() => {
+                    const answer = prompt(`Question ${currentQuestionIndex + 1}: ${question} Please type your answer below:`);
+                    if (answer) {
+                        submitAnswer(answer);
                     } else {
-                        typeText(`Wrong! The correct answer was: ${questionData.answer}`, 100);
+                        typeText('Quiz cancelled.');
                     }
-                    currentQuestionIndex++;
-                    setTimeout(() => {
-                        displayQuestion();
-                    }, 5000); // Wait before showing the next question
-                }
-            }, 8200); // Shortened delay before prompting for the answer
-        }
-
-        // Random Fact Function
-        function getRandomFact() {
-            const facts = [
-                "Did you know that honey never spoils?",
-                "Bananas are berries, but strawberries are not!",
-                "Octopuses have three hearts.",
-                "A group of flamingos is called a 'flamboyance'."
-            ];
-            typeText(facts[Math.floor(Math.random() * facts.length)]);
-        }
-
-        // Geolocation Function
-        function getGeolocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        const { latitude, longitude } = position.coords;
-                        const locationString = `Latitude: ${latitude}, Longitude: ${longitude}`;
-                        document.getElementById("currentLocation").innerText = locationString;
-                        showToast('Location retrieved successfully!');
-                    },
-                    error => {
-                        if (error.code === error.PERMISSION_DENIED) {
-                            showToast('Geolocation permission denied. Please enable it in your settings.');
-                        } else {
-                            showToast('Unable to retrieve location. Please check your settings.');
-                        }
-                    }
-                );
+                }, 4000); // Wait for 4 seconds before showing the prompt
             } else {
-                showToast('Geolocation is not supported by this browser.');
+                typeText('Quiz completed. Thank you for participating!');
             }
         }
 
-        // Display current time and geolocation on load
-        document.getElementById("currentTime").innerText = new Date().toLocaleTimeString();
-        getGeolocation(); // Call geolocation function to fetch the location
+        function submitAnswer(userAnswer) {
+            const correctAnswer = quizQuestions[currentCategory][currentQuestionIndex].answer;
+            const isCorrect = correctAnswer === userAnswer.toLowerCase();
+            const quizOutput = isCorrect ? 
+                `Congratulations on the correct answer! Your answer is: ${userAnswer}.` : 
+                `Incorrect. The correct answer is: ${correctAnswer}. Your answer was: ${userAnswer}.`;
+
+            typeText(quizOutput);
+
+            // Move to the next question after 4 seconds
+            setTimeout(() => {
+                currentQuestionIndex++;
+                askQuestion();
+            }, 4000);
+        }
+
+        function getRandomFact() {
+            // Logic for getting a random fact
+            const randomFact = "Did you know? The Earth's rotation is gradually slowing!";
+            typeText(randomFact);
+        }
+
+        // Update current time and location
+        function updateCurrentTime() {
+            const currentTime = new Date().toLocaleTimeString();
+            document.getElementById("currentTime").innerText = currentTime;
+        }
+
+        function updateCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const { latitude, longitude } = position.coords;
+                    document.getElementById("currentLocation").innerText = `Latitude: ${latitude}, Longitude: ${longitude}`;
+                }, () => {
+                    document.getElementById("currentLocation").innerText = 'Location access denied.';
+                });
+            } else {
+                document.getElementById("currentLocation").innerText = 'Geolocation is not supported.';
+            }
+        }
     </script>
 </body>
 </html>
