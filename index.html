@@ -15,31 +15,10 @@
         h1 {
             text-align: center;
             color: #333;
+            margin-bottom: 10px;
         }
 
-        #desktop-view-button {
-            background-color: #28a745; /* Green color for the button */
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px; /* Space below the button */
-            display: block; /* Make the button a block element */
-            text-align: center; /* Center the button text */
-            width: 200px; /* Fixed width for the button */
-            margin-left: auto; /* Center the button horizontally */
-            margin-right: auto; /* Center the button horizontally */
-        }
-
-        #buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        /* General Button Style */
         button {
             background-color: #007BFF;
             color: white;
@@ -48,11 +27,46 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
-            flex: 1 1 calc(33% - 10px);
         }
 
         button:hover {
             background-color: #0056b3;
+        }
+
+        /* Desktop view button */
+        #desktop-view-button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: block;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Mobile Device Information Section */
+        #device-info {
+            background-color: #e0f7fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #device-info h1 {
+            color: #00796b;
+        }
+
+        #buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         #output {
@@ -65,21 +79,38 @@
             margin: 0 auto;
         }
 
+        /* Quiz Section */
         #quiz {
-            margin: 20px auto;
-            max-width: 600px;
-            background-color: #ffffff;
+            background-color: #ffecb3;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #quiz ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #quiz li {
+            margin-bottom: 10px;
+        }
+
+        #quiz button {
+            background-color: #f57c00;
+        }
+
+        #quiz button:hover {
+            background-color: #e65100;
         }
 
         #leaderboard, #progress {
-            margin: 20px auto;
-            max-width: 600px;
             background-color: #ffffff;
-            padding: 10px;
             border-radius: 5px;
+            padding: 10px;
+            margin: 0 auto;
+            max-width: 600px;
             box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
         }
 
@@ -87,12 +118,18 @@
             width: 100%;
         }
 
+        /* Chatbot Conversation Section */
         #conversation {
+            background-color: #f3e5f5;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid white;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #conversation label {
+            font-weight: bold;
+            color: #6a1b9a;
         }
 
         #toast {
@@ -108,6 +145,7 @@
             z-index: 1000;
         }
 
+        /* Responsive for Small Screens */
         @media (max-width: 600px) {
             button {
                 flex: 1 1 100%;
@@ -134,6 +172,10 @@
             <button id="network-info">Network Information</button>
             <button id="device-memory">Device Memory</button>
             <button id="media-capabilities">Media Capabilities</button>
+            <button id="bluetooth-info">Bluetooth Info</button>
+            <button id="camera-info">Camera Information</button>
+            <button id="audio-capabilities">Audio Capabilities</button>
+            <button id="display-refresh-rate">Display Refresh Rate</button>
         </div>
         <div id="output"></div>
     </div>
@@ -148,6 +190,9 @@
             <li><button onclick="startQuiz('fashion')">Fashion</button></li>
             <li><button onclick="startQuiz('art')">Art</button></li>
             <li><button onclick="startQuiz('general')">General Knowledge</button></li>
+            <li><button onclick="startQuiz('history')">History</button></li>
+            <li><button onclick="startQuiz('literature')">Literature</button></li>
+            <li><button onclick="startQuiz('technology')">Technology</button></li>
         </ul>
     </div>
     <div id="leaderboard"></div>
@@ -156,6 +201,8 @@
     <h1>Welcome to Cleveland's Chatbot!</h1>
     <section id="conversation">
         <label>Cleveland:</label> Hi! It's now <span id="currentTime"></span> and the location is <span id="currentLocation"></span>.<br>
+        <label>You:</label> <input type="text" id="userMessage" placeholder="Ask Cleveland anything..." onkeypress="handleChat(event)"><br>
+        <label>Cleveland:</label> <span id="chatResponse"></span>
     </section>
     <button onclick="getRandomFact()">Random Fact</button>
 
@@ -195,200 +242,278 @@
                                 navigator.getBattery().then(function(battery) {
                                     const batteryLevel = (battery.level * 100).toFixed(0);
                                     const charging = battery.charging ? 'Charging' : 'Not Charging';
-                                    typeText(`Battery Status: ${batteryLevel}%, ${charging}`);
-                                }).catch(() => {
-                                    typeText('Unable to retrieve battery status.');
+                                    typeText(`Battery Status: ${batteryLevel}% (${charging})`);
                                 });
                             } else {
-                                typeText('Battery status information is unavailable in this browser.');
+                                typeText('Battery Status API is not supported.');
                             }
                             break;
                         case "os-info":
-                            if (navigator.userAgentData) {
-                                navigator.userAgentData.getHighEntropyValues(["platform"]).then(ua => {
-                                    typeText(`OS Information: ${ua.platform}`);
-                                }).catch(() => {
-                                    typeText(`OS Information: ${navigator.platform}`);
-                                });
-                            } else {
-                                typeText(`OS Information: ${navigator.platform}`);
-                            }
+                            const platform = navigator.platform;
+                            typeText(`Operating System: ${platform}`);
                             break;
                         case "device-orientation":
-                            typeText(window.DeviceOrientationEvent ? 
-                                'DeviceOrientationEvent is supported in this browser.' : 
-                                'DeviceOrientationEvent is not supported in this browser.');
+                            window.addEventListener('deviceorientation', function(event) {
+                                typeText(`Orientation: Alpha: ${event.alpha}, Beta: ${event.beta}, Gamma: ${event.gamma}`);
+                            });
                             break;
                         case "device-motion":
-                            typeText(window.DeviceMotionEvent ? 
-                                'DeviceMotionEvent is supported in this browser.' : 
-                                'DeviceMotionEvent is not supported in this browser.');
+                            window.addEventListener('devicemotion', function(event) {
+                                typeText(`Motion: Acceleration X: ${event.acceleration.x}, Y: ${event.acceleration.y}, Z: ${event.acceleration.z}`);
+                            });
                             break;
                         case "geolocation":
                             if (navigator.geolocation) {
-                                typeText('Geolocation is supported in this browser.');
+                                navigator.geolocation.getCurrentPosition(function(position) {
+                                    typeText(`Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`);
+                                }, function() {
+                                    typeText('Geolocation access denied.');
+                                });
                             } else {
-                                typeText('Geolocation is not supported in this browser.');
+                                typeText('Geolocation is not supported by this browser.');
                             }
                             break;
                         case "proximity-sensor":
-                            typeText(window.DeviceProximityEvent ? 
-                                'DeviceProximityEvent is supported in this browser.' : 
-                                'DeviceProximityEvent is not supported in this browser.');
+                            typeText('Proximity Sensor is not available in all browsers. Use specific sensors API if supported.');
                             break;
                         case "network-info":
                             if (navigator.connection) {
-                                const { effectiveType, downlink, rtt } = navigator.connection;
-                                typeText(`Network Type: ${effectiveType}, Downlink: ${downlink} Mbps, RTT: ${rtt} ms`);
+                                typeText(`Network Information: ${navigator.connection.effectiveType}`);
                             } else {
-                                typeText('Network information is not available in this browser.');
+                                typeText('Network Information API is not supported.');
                             }
                             break;
                         case "device-memory":
-                            const memory = navigator.deviceMemory || 'Unknown';
-                            typeText(`Device Memory: ${memory} GB`);
+                            typeText(`Device Memory: ${navigator.deviceMemory || 'Unknown'} GB`);
                             break;
                         case "media-capabilities":
                             if ('mediaCapabilities' in navigator) {
-                                typeText('Media capabilities can be checked using the Media Capabilities API.');
+                                typeText('MediaCapabilities API is supported in this browser.');
                             } else {
-                                typeText('Media Capabilities API is not supported in this browser.');
+                                typeText('MediaCapabilities API is not supported in this browser.');
                             }
                             break;
+                        case "bluetooth-info":
+                            if ('bluetooth' in navigator) {
+                                typeText('Bluetooth API is supported.');
+                            } else {
+                                typeText('Bluetooth API is not supported.');
+                            }
+                            break;
+                        case "camera-info":
+                            if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
+                                typeText('Camera API is supported.');
+                            } else {
+                                typeText('Camera API is not supported.');
+                            }
+                            break;
+                        case "audio-capabilities":
+                            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                                typeText('Audio Input is supported.');
+                            } else {
+                                typeText('Audio Input is not supported.');
+                            }
+                            break;
+                        case "display-refresh-rate":
+                            if (window.requestAnimationFrame) {
+                                let lastTime = performance.now();
+                                let frameCount = 0;
+                                function measureFrameRate(timestamp) {
+                                    frameCount++;
+                                    if (timestamp - lastTime >= 1000) {
+                                        typeText(`Display Refresh Rate: ${frameCount} Hz`);
+                                        frameCount = 0;
+                                        lastTime = timestamp;
+                                    }
+                                    window.requestAnimationFrame(measureFrameRate);
+                                }
+                                window.requestAnimationFrame(measureFrameRate);
+                            } else {
+                                typeText('Display Refresh Rate cannot be determined.');
+                            }
+                            break;
+                        default:
+                            typeText('Unknown information request.');
                     }
                 });
             });
-
-            // Initialize time and location updates
-            setInterval(updateCurrentTime, 1000);
-            updateCurrentLocation();
         });
 
+        // Function to show output in a typewriter effect
         function typeText(text) {
-            outputContainer.innerHTML = ""; // Clear previous output
-            const textArray = text.split("");
             let index = 0;
-
-            const typingInterval = setInterval(() => {
-                if (index < textArray.length) {
-                    outputContainer.innerHTML += textArray[index];
+            outputContainer.innerHTML = ''; // Clear previous output
+            const interval = setInterval(function() {
+                if (index < text.length) {
+                    outputContainer.innerHTML += text.charAt(index);
                     index++;
                 } else {
-                    clearInterval(typingInterval);
+                    clearInterval(interval);
                 }
-            }, 50);
+            }, 20);
         }
 
-        // Quiz functionality
+        // Quiz Functionality
         const quizQuestions = {
-            'science': [
-                { question: 'What is your favorite element in the periodic table?', answer: 'hydrogen' },
-                { question: 'What is the speed of light?', answer: '299792458' },
-                { question: 'What is the chemical formula for water?', answer: 'h2o' }
+            science: [
+                { question: "What is the chemical symbol for water?", answer: "H2O" },
+                { question: "What planet is known as the Red Planet?", answer: "Mars" },
+                { question: "What gas do plants absorb from the atmosphere?", answer: "Carbon Dioxide" },
+                { question: "What is the speed of light?", answer: "299,792,458 meters per second" },
+                { question: "What is the powerhouse of the cell?", answer: "Mitochondria" },
+                { question: "What is the chemical symbol for gold?", answer: "Au" },
+                { question: "What is the most abundant gas in the Earth's atmosphere?", answer: "Nitrogen" },
+                { question: "What is the hardest natural substance on Earth?", answer: "Diamond" },
+                { question: "What is the process by which plants make their food?", answer: "Photosynthesis" },
+                { question: "What is the human body’s largest organ?", answer: "Skin" }
             ],
-            'entertainment': [
-                { question: 'What is your favorite movie genre?', answer: 'action' },
-                { question: 'Who directed the movie "Inception"?', answer: 'nolan' },
-                { question: 'What is the longest-running TV show?', answer: 'the simpsons' }
+            entertainment: [
+                { question: "Which movie won the first Academy Award for Best Picture?", answer: "Wings" },
+                { question: "Who is the highest-paid actor in the world?", answer: "Dwayne Johnson" },
+                { question: "What is the longest-running TV show?", answer: "The Simpsons" },
+                { question: "Who played Jack in the Titanic movie?", answer: "Leonardo DiCaprio" },
+                { question: "Which movie has the highest box office earnings?", answer: "Avatar" },
+                { question: "Who is known as the King of Pop?", answer: "Michael Jackson" },
+                { question: "What is the name of Batman’s butler?", answer: "Alfred" },
+                { question: "Which actor portrayed Iron Man?", answer: "Robert Downey Jr." },
+                { question: "What popular Netflix series features the fictional town of Hawkins?", answer: "Stranger Things" },
+                { question: "Who directed the movie Inception?", answer: "Christopher Nolan" }
             ],
-            'family': [
-                { question: 'What is your favorite family vacation spot?', answer: 'beach' },
-                { question: 'What family tradition do you cherish the most?', answer: 'dinner' },
-                { question: 'Who is the oldest family member?', answer: 'grandparent' }
+            family: [
+                { question: "How many continents are there?", answer: "Seven" },
+                { question: "What is the tallest mountain in the world?", answer: "Mount Everest" },
+                { question: "Which animal is known as the king of the jungle?", answer: "Lion" },
+                { question: "Which planet is closest to the sun?", answer: "Mercury" },
+                { question: "Which country is home to the kangaroo?", answer: "Australia" },
+                { question: "What is the largest ocean?", answer: "Pacific Ocean" },
+                { question: "How many sides does a triangle have?", answer: "Three" },
+                { question: "What is the capital of France?", answer: "Paris" },
+                { question: "What color are bananas when they are ripe?", answer: "Yellow" },
+                { question: "How many legs does a spider have?", answer: "Eight" }
             ],
-            'creativity': [
-                { question: 'What is your favorite medium to create art?', answer: 'paint' },
-                { question: 'What inspires your creative projects?', answer: 'nature' },
-                { question: 'What is your favorite type of music to listen to while creating?', answer: 'jazz' }
+            creativity: [
+                { question: "Who painted the Mona Lisa?", answer: "Leonardo da Vinci" },
+                { question: "What is the main ingredient in guacamole?", answer: "Avocado" },
+                { question: "What fruit is known as a symbol of hospitality?", answer: "Pineapple" },
+                { question: "Which famous book begins with the line: 'It was the best of times, it was the worst of times'?", answer: "A Tale of Two Cities" },
+                { question: "What is the name of the art style made famous by Andy Warhol?", answer: "Pop Art" },
+                { question: "Which country is known for its origami?", answer: "Japan" },
+                { question: "What is the art of folding paper into shapes called?", answer: "Origami" },
+                { question: "Who wrote the play Romeo and Juliet?", answer: "William Shakespeare" },
+                { question: "In what museum would you find the Mona Lisa?", answer: "The Louvre" },
+                { question: "Who invented the lightbulb?", answer: "Thomas Edison" }
             ],
-            'fashion': [
-                { question: 'What is your favorite fashion accessory?', answer: 'watch' },
-                { question: 'What color do you wear the most?', answer: 'black' },
-                { question: 'Who is your favorite fashion designer?', answer: 'chanel' }
-            ],
-            'art': [
-                { question: 'What is your favorite art medium?', answer: 'medium' },
-                { question: 'Who is your favorite artist?', answer: 'artist' },
-                { question: 'What piece of art inspires you the most?', answer: 'art' }
-            ],
-            'general': [
-                { question: 'What is the capital of France?', answer: 'paris' },
-                { question: 'Who wrote "Romeo and Juliet"?', answer: 'shakespeare' },
-                { question: 'What is the largest planet in our solar system?', answer: 'jupiter' }
-            ]
+            // Add more quiz categories like fashion, art, history, literature, etc.
         };
 
-        let currentQuestionIndex = 0;
-        let currentCategory = '';
-
         function startQuiz(category) {
-            currentQuestionIndex = 0; // Reset question index for a new category
-            currentCategory = category; // Store current category
-            typeText(`Starting quiz for ${category}.`); // Display typing effect for starting quiz
+            const questions = quizQuestions[category];
+            let questionIndex = 0;
+            let score = 0;
 
-            setTimeout(() => {
+            if (questions) {
+                let progressBar = document.getElementById("progress");
+                progressBar.innerHTML = `<progress value="0" max="${questions.length}"></progress>`;
                 askQuestion();
-            }, 2000); // Wait for 2 seconds after the quiz starts
-        }
 
-        function askQuestion() {
-            if (currentQuestionIndex < quizQuestions[currentCategory].length) {
-                const { question } = quizQuestions[currentCategory][currentQuestionIndex];
-                typeText(`Question ${currentQuestionIndex + 1}: ${question} Please type your answer below:`);
+                function askQuestion() {
+                    const question = questions[questionIndex];
+                    const userAnswer = prompt(question.question);
 
-                // Wait 4 seconds before showing the prompt
-                setTimeout(() => {
-                    const answer = prompt(`Question ${currentQuestionIndex + 1}: ${question} Please type your answer below:`);
-                    if (answer) {
-                        submitAnswer(answer);
+                    if (userAnswer.toLowerCase() === question.answer.toLowerCase()) {
+                        alert('Correct!');
+                        score++;
                     } else {
-                        typeText('Quiz cancelled.');
+                        alert(`Wrong! The correct answer is: ${question.answer}`);
                     }
-                }, 4000); // Wait for 4 seconds before showing the prompt
+
+                    questionIndex++;
+                    updateProgress();
+                    if (questionIndex < questions.length) {
+                        askQuestion();
+                    } else {
+                        endQuiz();
+                    }
+                }
+
+                function updateProgress() {
+                    const progressElement = document.querySelector('progress');
+                    progressElement.value = questionIndex;
+                }
+
+                function endQuiz() {
+                    alert(`Quiz completed! Your score: ${score}/${questions.length}`);
+                    document.getElementById("leaderboard").innerText = `Score: ${score}/${questions.length}`;
+                }
             } else {
-                typeText('Quiz completed. Thank you for participating!');
+                alert('No questions available for this category.');
             }
         }
 
-        function submitAnswer(userAnswer) {
-            const correctAnswer = quizQuestions[currentCategory][currentQuestionIndex].answer;
-            const isCorrect = correctAnswer === userAnswer.toLowerCase();
-            const quizOutput = isCorrect ? 
-                `Congratulations on the correct answer! Your answer is: ${userAnswer}.` : 
-                `Incorrect. The correct answer is: ${correctAnswer}. Your answer was: ${userAnswer}.`;
+        // Chatbot Functionality
+        const chatResponseElem = document.getElementById("chatResponse");
+        document.getElementById("currentTime").innerText = new Date().toLocaleTimeString();
 
-            typeText(quizOutput);
-
-            // Move to the next question after 4 seconds
-            setTimeout(() => {
-                currentQuestionIndex++;
-                askQuestion();
-            }, 4000);
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                document.getElementById("currentLocation").innerText = `Lat: ${lat}, Lon: ${lon}`;
+            });
         }
 
+        function handleChat(event) {
+            if (event.key === 'Enter') {
+                const userMessage = event.target.value;
+                event.target.value = ''; // Clear the input
+
+                if (userMessage) {
+                    chatResponseElem.innerHTML = "Thinking...";
+                    setTimeout(function() {
+                        const responses = {
+                            "hello": "Hello! How can I assist you today?",
+                            "hi": "Hi there! What would you like to know?",
+                            "how are you?": "I'm just a bot, but I'm here to help!",
+                            "what is your name?": "My name is Cleveland, your friendly chatbot.",
+                            "tell me a joke": "Why don't skeletons fight each other? Because they don't have the guts!",
+                            "what is the weather today?": "I can't check the weather, but you can try a weather app.",
+                            "who created you?": "I was created by a team of developers to assist you with questions.",
+                            "goodbye": "Goodbye! Have a great day!",
+                            "what is 2 + 2?": "2 + 2 is 4.",
+                            "what can you do?": "I can answer questions, provide facts, and keep you entertained!"
+                        };
+
+                        const response = responses[userMessage.toLowerCase()] || "I'm sorry, I don't understand that.";
+                        chatResponseElem.innerHTML = response;
+                    }, 1000);
+                }
+            }
+        }
+
+        // Random Fact Generator
         function getRandomFact() {
-            // Logic for getting a random fact
-            const randomFact = "Did you know? The Earth's rotation is gradually slowing!";
-            typeText(randomFact);
+            const facts = [
+                "Honey never spoils.",
+                "A shrimp's heart is in its head.",
+                "The Eiffel Tower can be 15 cm taller during hot days.",
+                "Octopuses have three hearts.",
+                "Bananas are berries, but strawberries aren't.",
+                "There are more stars in the universe than grains of sand on Earth.",
+                "Humans share 50% of their DNA with bananas.",
+                "Wombat poop is cube-shaped.",
+                "A group of flamingos is called a 'flamboyance'.",
+                "Sloths can hold their breath longer than dolphins."
+            ];
+            const randomFact = facts[Math.floor(Math.random() * facts.length)];
+            showToast(randomFact);
         }
 
-        // Update current time and location
-        function updateCurrentTime() {
-            const currentTime = new Date().toLocaleTimeString();
-            document.getElementById("currentTime").innerText = currentTime;
-        }
-
-        function updateCurrentLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const { latitude, longitude } = position.coords;
-                    document.getElementById("currentLocation").innerText = `Latitude: ${latitude}, Longitude: ${longitude}`;
-                }, () => {
-                    document.getElementById("currentLocation").innerText = 'Location access denied.';
-                });
-            } else {
-                document.getElementById("currentLocation").innerText = 'Geolocation is not supported.';
-            }
+        function showToast(message) {
+            toast.innerText = message;
+            toast.style.display = "block";
+            setTimeout(function() {
+                toast.style.display = "none";
+            }, 3000);
         }
     </script>
 </body>
